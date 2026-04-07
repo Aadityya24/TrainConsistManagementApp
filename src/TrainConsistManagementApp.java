@@ -12,13 +12,13 @@ class PassengerBogie {
     }
 
     void display() {
-        System.out.println(id + " | " + type + " | Capacity: " + capacity);
+        System.out.println(id + " | " + type + " | " + capacity);
     }
 }
 
 class Train {
     ArrayList<PassengerBogie> bogies = new ArrayList<>();
-    HashSet<String> bogieIds = new HashSet<>();
+    TreeSet<String> bogieIds = new TreeSet<>();
 
     void addBogie(PassengerBogie b) {
         if (bogieIds.contains(b.id)) {
@@ -30,7 +30,14 @@ class Train {
         }
     }
 
-    void display() {
+    void displaySortedIds() {
+        System.out.println("Sorted Bogie IDs:");
+        for (String id : bogieIds) {
+            System.out.println(id);
+        }
+    }
+
+    void displayAll() {
         for (PassengerBogie b : bogies) {
             b.display();
         }
@@ -47,29 +54,33 @@ public class TrainConsistManagementApp {
 
         do {
             System.out.println("\n1 Add Bogie");
-            System.out.println("2 Display");
-            System.out.println("3 Exit");
+            System.out.println("2 Display All");
+            System.out.println("3 Display Sorted IDs");
+            System.out.println("4 Exit");
 
             choice = sc.nextInt();
 
             switch (choice) {
                 case 1:
                     sc.nextLine();
-                    System.out.print("Enter Bogie ID: ");
+                    System.out.print("Enter ID: ");
                     String id = sc.nextLine();
                     System.out.print("Enter type: ");
                     String type = sc.nextLine();
                     System.out.print("Enter capacity: ");
                     int cap = sc.nextInt();
-
                     train.addBogie(new PassengerBogie(id, type, cap));
                     break;
 
                 case 2:
-                    train.display();
+                    train.displayAll();
+                    break;
+
+                case 3:
+                    train.displaySortedIds();
                     break;
             }
 
-        } while (choice != 3);
+        } while (choice != 4);
     }
 }
