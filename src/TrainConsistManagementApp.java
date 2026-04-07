@@ -1,48 +1,49 @@
 import java.util.*;
 
-class InvalidCargoException extends Exception {
-    InvalidCargoException(String msg) {
-        super(msg);
-    }
-}
-
-class GoodsBogie {
+class PassengerBogie {
     String id;
-    String shape;
-    String cargo;
+    String type;
+    int capacity;
 
-    GoodsBogie(String id, String shape) {
+    PassengerBogie(String id, String type, int capacity) {
         this.id = id;
-        this.shape = shape;
-    }
-
-    void assignCargo(String cargo) throws InvalidCargoException {
-        if (shape.equalsIgnoreCase("Cylindrical") && !cargo.equalsIgnoreCase("Oil")) {
-            throw new InvalidCargoException("Cylindrical bogie can carry only Oil");
-        }
-        if (shape.equalsIgnoreCase("Rectangular") && !cargo.equalsIgnoreCase("Coal")) {
-            throw new InvalidCargoException("Rectangular bogie can carry only Coal");
-        }
-        this.cargo = cargo;
+        this.type = type;
+        this.capacity = capacity;
     }
 
     void display() {
-        System.out.println(id + " | " + shape + " | " + cargo);
+        System.out.println(id + " | " + type + " | " + capacity);
     }
 }
 
 class Train {
-    ArrayList<GoodsBogie> goodsBogies = new ArrayList<>();
+    ArrayList<PassengerBogie> bogies = new ArrayList<>();
 
-    void addBogie(GoodsBogie b) {
-        goodsBogies.add(b);
+    void addBogie(PassengerBogie b) {
+        bogies.add(b);
         System.out.println("Bogie added");
     }
 
     void displayAll() {
-        for (GoodsBogie b : goodsBogies) {
+        for (PassengerBogie b : bogies) {
             b.display();
         }
+    }
+
+    void bubbleSortByCapacity() {
+        int n = bogies.size();
+
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (bogies.get(j).capacity < bogies.get(j + 1).capacity) {
+                    PassengerBogie temp = bogies.get(j);
+                    bogies.set(j, bogies.get(j + 1));
+                    bogies.set(j + 1, temp);
+                }
+            }
+        }
+
+        System.out.println("Sorted using Bubble Sort");
     }
 }
 
@@ -55,9 +56,9 @@ public class TrainConsistManagementApp {
         int choice;
 
         do {
-            System.out.println("\n1 Add Goods Bogie");
-            System.out.println("2 Assign Cargo");
-            System.out.println("3 Display All");
+            System.out.println("\n1 Add Bogie");
+            System.out.println("2 Display All");
+            System.out.println("3 Bubble Sort by Capacity");
             System.out.println("4 Exit");
 
             choice = sc.nextInt();
@@ -67,34 +68,19 @@ public class TrainConsistManagementApp {
                     sc.nextLine();
                     System.out.print("Enter ID: ");
                     String id = sc.nextLine();
-                    System.out.print("Enter shape (Cylindrical/Rectangular): ");
-                    String shape = sc.nextLine();
-                    train.addBogie(new GoodsBogie(id, shape));
+                    System.out.print("Enter type: ");
+                    String type = sc.nextLine();
+                    System.out.print("Enter capacity: ");
+                    int cap = sc.nextInt();
+                    train.addBogie(new PassengerBogie(id, type, cap));
                     break;
 
                 case 2:
-                    sc.nextLine();
-                    System.out.print("Enter Bogie ID: ");
-                    String bid = sc.nextLine();
-                    System.out.print("Enter Cargo: ");
-                    String cargo = sc.nextLine();
-
-                    for (GoodsBogie b : train.goodsBogies) {
-                        if (b.id.equalsIgnoreCase(bid)) {
-                            try {
-                                b.assignCargo(cargo);
-                                System.out.println("Cargo assigned successfully");
-                            } catch (InvalidCargoException e) {
-                                System.out.println("Error: " + e.getMessage());
-                            } finally {
-                                System.out.println("Assignment attempted");
-                            }
-                        }
-                    }
+                    train.displayAll();
                     break;
 
                 case 3:
-                    train.displayAll();
+                    train.bubbleSortByCapacity();
                     break;
             }
 
