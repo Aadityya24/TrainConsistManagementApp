@@ -1,89 +1,56 @@
 import java.util.*;
-import java.util.function.*;
+import java.util.stream.*;
 
-class GoodsBogie {
+class PassengerBogie {
     String id;
-    String shape;
-    String cargo;
+    String type;
+    int capacity;
 
-    GoodsBogie(String id, String shape, String cargo) {
+    PassengerBogie(String id, String type, int capacity) {
         this.id = id;
-        this.shape = shape;
-        this.cargo = cargo;
-    }
-
-    void display() {
-        System.out.println(id + " | " + shape + " | " + cargo);
-    }
-}
-
-class Train {
-    ArrayList<GoodsBogie> goodsBogies = new ArrayList<>();
-
-    Predicate<GoodsBogie> safetyRule = b ->
-            (b.shape.equalsIgnoreCase("Cylindrical") && b.cargo.equalsIgnoreCase("Oil")) ||
-                    (b.shape.equalsIgnoreCase("Rectangular") && b.cargo.equalsIgnoreCase("Coal"));
-
-    void addGoodsBogie(GoodsBogie b) {
-        if (safetyRule.test(b)) {
-            goodsBogies.add(b);
-            System.out.println("Goods bogie added (Safe)");
-        } else {
-            System.out.println("Safety violation: Invalid cargo for bogie type");
-        }
-    }
-
-    void displayAll() {
-        for (GoodsBogie b : goodsBogies) {
-            b.display();
-        }
-    }
-
-    void checkAllSafety() {
-        goodsBogies.stream()
-                .filter(b -> !safetyRule.test(b))
-                .forEach(b -> System.out.println("Unsafe: " + b.id));
+        this.type = type;
+        this.capacity = capacity;
     }
 }
 
 public class TrainConsistManagementApp {
     public static void main(String[] args) {
 
-        Scanner sc = new Scanner(System.in);
-        Train train = new Train();
+        List<PassengerBogie> bogies = new ArrayList<>();
 
-        int choice;
+        for (int i = 1; i <= 100000; i++) {
+            bogies.add(new PassengerBogie("BG" + i, "Sleeper", i % 100));
+        }
 
-        do {
-            System.out.println("\n1 Add Goods Bogie");
-            System.out.println("2 Display All");
-            System.out.println("3 Check Safety");
-            System.out.println("4 Exit");
+        long startLoop = System.nanoTime();
 
-            choice = sc.nextInt();
-
-            switch (choice) {
-                case 1:
-                    sc.nextLine();
-                    System.out.print("Enter ID: ");
-                    String id = sc.nextLine();
-                    System.out.print("Enter shape (Cylindrical/Rectangular): ");
-                    String shape = sc.nextLine();
-                    System.out.print("Enter cargo (Oil/Coal): ");
-                    String cargo = sc.nextLine();
-
-                    train.addGoodsBogie(new GoodsBogie(id, shape, cargo));
-                    break;
-
-                case 2:
-                    train.displayAll();
-                    break;
-
-                case 3:
-                    train.checkAllSafety();
-                    break;
+        List<PassengerBogie> loopResult = new ArrayList<>();
+        for (PassengerBogie b : bogies) {
+            if (b.capacity > 50) {
+                loopResult.add(b);
             }
+        }
 
-        } while (choice != 4);
+        long endLoop = System.nanoTime();
+
+        long startStream = System.nanoTime();
+
+        List<PassengerBogie> streamResult = bogies.stream()
+                .filter(b -> b.capacity > 50)
+                .collect(Collectors.toList());
+
+        long endStream = System.nanoTime();
+
+        long loopTime = endLoop - startLoop;
+        long streamTime = endStream - startStream;
+
+        System.out.println("Loop Time: " + loopTime + " ns");
+        System.out.println("Stream Time: " + streamTime + " ns");
+
+        if (loopTime < streamTime) {
+            System.out.println("Loop is faster");
+        } else {
+            System.out.println("Stream is faster");
+        }
     }
 }
