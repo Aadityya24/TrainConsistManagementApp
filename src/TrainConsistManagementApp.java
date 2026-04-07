@@ -23,15 +23,15 @@ class Train {
 
     void searchBogie(String id) {
         if (bogieMap.containsKey(id)) {
-            System.out.println("Capacity: " + bogieMap.get(id));
+            System.out.println(id + " | Capacity: " + bogieMap.get(id));
         } else {
             System.out.println("Bogie not found");
         }
     }
 
     void displayAll() {
-        for (Map.Entry<String, Integer> entry : bogieMap.entrySet()) {
-            System.out.println(entry.getKey() + " | Capacity: " + entry.getValue());
+        for (Map.Entry<String, Integer> e : bogieMap.entrySet()) {
+            System.out.println(e.getKey() + " | Capacity: " + e.getValue());
         }
     }
 }
