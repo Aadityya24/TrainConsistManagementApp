@@ -73,6 +73,14 @@ class Train {
             }
         }
     }
+
+    void totalCapacity() {
+        int total = bogies.stream()
+                .map(b -> b.capacity)
+                .reduce(0, (a, b) -> a + b);
+
+        System.out.println("Total Seating Capacity: " + total);
+    }
 }
 
 public class TrainConsistManagementApp {
@@ -89,7 +97,8 @@ public class TrainConsistManagementApp {
             System.out.println("3 Sort by Capacity");
             System.out.println("4 Filter by Capacity");
             System.out.println("5 Group by Type");
-            System.out.println("6 Exit");
+            System.out.println("6 Total Capacity");
+            System.out.println("7 Exit");
 
             choice = sc.nextInt();
 
@@ -122,8 +131,12 @@ public class TrainConsistManagementApp {
                 case 5:
                     train.groupByType();
                     break;
+
+                case 6:
+                    train.totalCapacity();
+                    break;
             }
 
-        } while (choice != 6);
+        } while (choice != 7);
     }
 }
