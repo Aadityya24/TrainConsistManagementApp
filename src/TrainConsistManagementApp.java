@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.*;
 
 class PassengerBogie {
     String id;
@@ -24,10 +25,16 @@ class CapacityComparator implements Comparator<PassengerBogie> {
 
 class Train {
     ArrayList<PassengerBogie> bogies = new ArrayList<>();
+    HashMap<String, Integer> bogieMap = new HashMap<>();
 
     void addBogie(PassengerBogie b) {
-        bogies.add(b);
-        System.out.println("Bogie added");
+        if (bogieMap.containsKey(b.id)) {
+            System.out.println("Duplicate ID not allowed");
+        } else {
+            bogies.add(b);
+            bogieMap.put(b.id, b.capacity);
+            System.out.println("Bogie added");
+        }
     }
 
     void displayAll() {
@@ -39,6 +46,20 @@ class Train {
     void sortByCapacity() {
         Collections.sort(bogies, new CapacityComparator());
         System.out.println("Sorted by capacity");
+    }
+
+    void filterByCapacity(int minCapacity) {
+        List<PassengerBogie> result = bogies.stream()
+                .filter(b -> b.capacity >= minCapacity)
+                .collect(Collectors.toList());
+
+        if (result.isEmpty()) {
+            System.out.println("No bogies found");
+        } else {
+            for (PassengerBogie b : result) {
+                b.display();
+            }
+        }
     }
 }
 
@@ -54,7 +75,8 @@ public class TrainConsistManagementApp {
             System.out.println("\n1 Add Bogie");
             System.out.println("2 Display All");
             System.out.println("3 Sort by Capacity");
-            System.out.println("4 Exit");
+            System.out.println("4 Filter by Capacity");
+            System.out.println("5 Exit");
 
             choice = sc.nextInt();
 
@@ -77,8 +99,14 @@ public class TrainConsistManagementApp {
                 case 3:
                     train.sortByCapacity();
                     break;
+
+                case 4:
+                    System.out.print("Enter minimum capacity: ");
+                    int min = sc.nextInt();
+                    train.filterByCapacity(min);
+                    break;
             }
 
-        } while (choice != 4);
+        } while (choice != 5);
     }
 }
