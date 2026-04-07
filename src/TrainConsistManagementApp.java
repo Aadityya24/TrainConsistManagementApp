@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.regex.*;
 import java.util.stream.*;
 
 class PassengerBogie {
@@ -17,15 +18,21 @@ class PassengerBogie {
     }
 }
 
-class CapacityComparator implements Comparator<PassengerBogie> {
-    public int compare(PassengerBogie a, PassengerBogie b) {
-        return b.capacity - a.capacity;
-    }
-}
-
 class Train {
     ArrayList<PassengerBogie> bogies = new ArrayList<>();
     HashMap<String, Integer> bogieMap = new HashMap<>();
+
+    boolean validateTrainId(String trainId) {
+        Pattern p = Pattern.compile("TRN-\\d{4}");
+        Matcher m = p.matcher(trainId);
+        return m.matches();
+    }
+
+    boolean validateCargoCode(String code) {
+        Pattern p = Pattern.compile("CG-[A-Z]{3}-\\d{2}");
+        Matcher m = p.matcher(code);
+        return m.matches();
+    }
 
     void addBogie(PassengerBogie b) {
         if (bogieMap.containsKey(b.id)) {
@@ -42,45 +49,6 @@ class Train {
             b.display();
         }
     }
-
-    void sortByCapacity() {
-        Collections.sort(bogies, new CapacityComparator());
-        System.out.println("Sorted by capacity");
-    }
-
-    void filterByCapacity(int minCapacity) {
-        List<PassengerBogie> result = bogies.stream()
-                .filter(b -> b.capacity >= minCapacity)
-                .collect(Collectors.toList());
-
-        if (result.isEmpty()) {
-            System.out.println("No bogies found");
-        } else {
-            for (PassengerBogie b : result) {
-                b.display();
-            }
-        }
-    }
-
-    void groupByType() {
-        Map<String, List<PassengerBogie>> grouped =
-                bogies.stream().collect(Collectors.groupingBy(b -> b.type));
-
-        for (String type : grouped.keySet()) {
-            System.out.println("\nType: " + type);
-            for (PassengerBogie b : grouped.get(type)) {
-                b.display();
-            }
-        }
-    }
-
-    void totalCapacity() {
-        int total = bogies.stream()
-                .map(b -> b.capacity)
-                .reduce(0, (a, b) -> a + b);
-
-        System.out.println("Total Seating Capacity: " + total);
-    }
 }
 
 public class TrainConsistManagementApp {
@@ -89,23 +57,38 @@ public class TrainConsistManagementApp {
         Scanner sc = new Scanner(System.in);
         Train train = new Train();
 
+        System.out.print("Enter Train ID: ");
+        String trainId = sc.nextLine();
+
+        if (!train.validateTrainId(trainId)) {
+            System.out.println("Invalid Train ID format");
+            return;
+        } else {
+            System.out.println("Valid Train ID");
+        }
+
+        System.out.print("Enter Cargo Code: ");
+        String cargo = sc.nextLine();
+
+        if (!train.validateCargoCode(cargo)) {
+            System.out.println("Invalid Cargo Code format");
+        } else {
+            System.out.println("Valid Cargo Code");
+        }
+
         int choice;
 
         do {
             System.out.println("\n1 Add Bogie");
             System.out.println("2 Display All");
-            System.out.println("3 Sort by Capacity");
-            System.out.println("4 Filter by Capacity");
-            System.out.println("5 Group by Type");
-            System.out.println("6 Total Capacity");
-            System.out.println("7 Exit");
+            System.out.println("3 Exit");
 
             choice = sc.nextInt();
 
             switch (choice) {
                 case 1:
                     sc.nextLine();
-                    System.out.print("Enter ID: ");
+                    System.out.print("Enter Bogie ID: ");
                     String id = sc.nextLine();
                     System.out.print("Enter type: ");
                     String type = sc.nextLine();
@@ -117,26 +100,8 @@ public class TrainConsistManagementApp {
                 case 2:
                     train.displayAll();
                     break;
-
-                case 3:
-                    train.sortByCapacity();
-                    break;
-
-                case 4:
-                    System.out.print("Enter minimum capacity: ");
-                    int min = sc.nextInt();
-                    train.filterByCapacity(min);
-                    break;
-
-                case 5:
-                    train.groupByType();
-                    break;
-
-                case 6:
-                    train.totalCapacity();
-                    break;
             }
 
-        } while (choice != 7);
+        } while (choice != 3);
     }
 }
