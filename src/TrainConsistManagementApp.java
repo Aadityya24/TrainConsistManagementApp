@@ -1,5 +1,11 @@
 import java.util.*;
 
+class EmptyTrainException extends Exception {
+    EmptyTrainException(String msg) {
+        super(msg);
+    }
+}
+
 class PassengerBogie {
     String id;
     String type;
@@ -18,29 +24,51 @@ class PassengerBogie {
 
 class Train {
     ArrayList<PassengerBogie> bogies = new ArrayList<>();
-    TreeSet<String> bogieIds = new TreeSet<>();
 
     void addBogie(PassengerBogie b) {
-        if (bogieIds.contains(b.id)) {
-            System.out.println("Duplicate ID not allowed");
-        } else {
-            bogies.add(b);
-            bogieIds.add(b.id);
-            System.out.println("Bogie added");
-        }
-    }
-
-    void displaySortedIds() {
-        System.out.println("Sorted Bogie IDs:");
-        for (String id : bogieIds) {
-            System.out.println(id);
-        }
+        bogies.add(b);
+        System.out.println("Bogie added");
     }
 
     void displayAll() {
+        if (bogies.isEmpty()) {
+            System.out.println("Train is empty");
+            return;
+        }
+
         for (PassengerBogie b : bogies) {
             b.display();
         }
+    }
+
+    void binarySearch(String searchId) throws EmptyTrainException {
+        if (bogies.isEmpty()) {
+            throw new EmptyTrainException("Cannot search: Train has no bogies");
+        }
+
+        Collections.sort(bogies, Comparator.comparing(b -> b.id));
+
+        int left = 0;
+        int right = bogies.size() - 1;
+
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            PassengerBogie midBogie = bogies.get(mid);
+
+            int cmp = midBogie.id.compareToIgnoreCase(searchId);
+
+            if (cmp == 0) {
+                System.out.println("Bogie found:");
+                midBogie.display();
+                return;
+            } else if (cmp < 0) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+
+        System.out.println("Bogie not found");
     }
 }
 
@@ -55,7 +83,7 @@ public class TrainConsistManagementApp {
         do {
             System.out.println("\n1 Add Bogie");
             System.out.println("2 Display All");
-            System.out.println("3 Display Sorted IDs");
+            System.out.println("3 Search Bogie (Binary)");
             System.out.println("4 Exit");
 
             choice = sc.nextInt();
@@ -77,7 +105,15 @@ public class TrainConsistManagementApp {
                     break;
 
                 case 3:
-                    train.displaySortedIds();
+                    sc.nextLine();
+                    System.out.print("Enter ID to search: ");
+                    String search = sc.nextLine();
+
+                    try {
+                        train.binarySearch(search);
+                    } catch (EmptyTrainException e) {
+                        System.out.println("Error: " + e.getMessage());
+                    }
                     break;
             }
 
