@@ -17,21 +17,21 @@ class PassengerBogie {
 }
 
 class Train {
+    LinkedHashSet<String> bogieIds = new LinkedHashSet<>();
     ArrayList<PassengerBogie> bogies = new ArrayList<>();
-    TreeSet<String> bogieIds = new TreeSet<>();
 
     void addBogie(PassengerBogie b) {
         if (bogieIds.contains(b.id)) {
             System.out.println("Duplicate ID not allowed");
         } else {
-            bogies.add(b);
             bogieIds.add(b.id);
+            bogies.add(b);
             System.out.println("Bogie added");
         }
     }
 
-    void displaySortedIds() {
-        System.out.println("Sorted Bogie IDs:");
+    void displayInOrder() {
+        System.out.println("Bogie IDs in insertion order:");
         for (String id : bogieIds) {
             System.out.println(id);
         }
@@ -55,7 +55,7 @@ public class TrainConsistManagementApp {
         do {
             System.out.println("\n1 Add Bogie");
             System.out.println("2 Display All");
-            System.out.println("3 Display Sorted IDs");
+            System.out.println("3 Display Insertion Order");
             System.out.println("4 Exit");
 
             choice = sc.nextInt();
@@ -69,6 +69,7 @@ public class TrainConsistManagementApp {
                     String type = sc.nextLine();
                     System.out.print("Enter capacity: ");
                     int cap = sc.nextInt();
+
                     train.addBogie(new PassengerBogie(id, type, cap));
                     break;
 
@@ -77,7 +78,7 @@ public class TrainConsistManagementApp {
                     break;
 
                 case 3:
-                    train.displaySortedIds();
+                    train.displayInOrder();
                     break;
             }
 
