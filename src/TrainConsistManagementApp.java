@@ -30,18 +30,20 @@ class Train {
         }
     }
 
-    void sortBogieNames() {
-        String[] types = new String[bogies.size()];
+    void linearSearch(String searchId) {
+        boolean found = false;
 
-        for (int i = 0; i < bogies.size(); i++) {
-            types[i] = bogies.get(i).type;
+        for (PassengerBogie b : bogies) {
+            if (b.id.equalsIgnoreCase(searchId)) {
+                System.out.println("Bogie found:");
+                b.display();
+                found = true;
+                break;
+            }
         }
 
-        Arrays.sort(types);
-
-        System.out.println("Sorted Bogie Types:");
-        for (String t : types) {
-            System.out.println(t);
+        if (!found) {
+            System.out.println("Bogie not found");
         }
     }
 }
@@ -57,7 +59,7 @@ public class TrainConsistManagementApp {
         do {
             System.out.println("\n1 Add Bogie");
             System.out.println("2 Display All");
-            System.out.println("3 Sort Bogie Names");
+            System.out.println("3 Search Bogie (Linear Search)");
             System.out.println("4 Exit");
 
             choice = sc.nextInt();
@@ -79,7 +81,10 @@ public class TrainConsistManagementApp {
                     break;
 
                 case 3:
-                    train.sortBogieNames();
+                    sc.nextLine();
+                    System.out.print("Enter ID to search: ");
+                    String search = sc.nextLine();
+                    train.linearSearch(search);
                     break;
             }
 
