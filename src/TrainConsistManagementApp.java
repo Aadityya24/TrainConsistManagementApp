@@ -61,6 +61,18 @@ class Train {
             }
         }
     }
+
+    void groupByType() {
+        Map<String, List<PassengerBogie>> grouped =
+                bogies.stream().collect(Collectors.groupingBy(b -> b.type));
+
+        for (String type : grouped.keySet()) {
+            System.out.println("\nType: " + type);
+            for (PassengerBogie b : grouped.get(type)) {
+                b.display();
+            }
+        }
+    }
 }
 
 public class TrainConsistManagementApp {
@@ -76,7 +88,8 @@ public class TrainConsistManagementApp {
             System.out.println("2 Display All");
             System.out.println("3 Sort by Capacity");
             System.out.println("4 Filter by Capacity");
-            System.out.println("5 Exit");
+            System.out.println("5 Group by Type");
+            System.out.println("6 Exit");
 
             choice = sc.nextInt();
 
@@ -105,8 +118,12 @@ public class TrainConsistManagementApp {
                     int min = sc.nextInt();
                     train.filterByCapacity(min);
                     break;
+
+                case 5:
+                    train.groupByType();
+                    break;
             }
 
-        } while (choice != 5);
+        } while (choice != 6);
     }
 }
