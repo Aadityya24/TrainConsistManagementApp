@@ -1,62 +1,37 @@
 import java.util.*;
 
-class PassengerBogie {
-    String id;
-    String type;
-    int capacity;
-
-    PassengerBogie(String id, String type, int capacity) {
-        this.id = id;
-        this.type = type;
-        this.capacity = capacity;
-    }
-
-    void display() {
-        System.out.println(id + " | " + type + " | " + capacity);
-    }
-}
-
 class Train {
-    LinkedHashSet<String> bogieIds = new LinkedHashSet<>();
-    ArrayList<PassengerBogie> bogies = new ArrayList<>();
+    HashMap<String, Integer> bogieMap = new HashMap<>();
 
-    void addBogie(PassengerBogie b) {
-        if (bogieIds.contains(b.id)) {
+    void addBogie(String id, int capacity) {
+        if (bogieMap.containsKey(id)) {
             System.out.println("Duplicate ID not allowed");
         } else {
-            bogieIds.add(b.id);
-            bogies.add(b);
+            bogieMap.put(id, capacity);
             System.out.println("Bogie added");
         }
     }
 
-    void removeBogie(int index) {
-        if (index >= 0 && index < bogies.size()) {
-            bogieIds.remove(bogies.get(index).id);
-            bogies.remove(index);
+    void removeBogie(String id) {
+        if (bogieMap.containsKey(id)) {
+            bogieMap.remove(id);
             System.out.println("Bogie removed");
         } else {
-            System.out.println("Invalid index");
+            System.out.println("Bogie not found");
         }
     }
 
     void searchBogie(String id) {
-        if (bogieIds.contains(id))
-            System.out.println("Bogie exists");
-        else
+        if (bogieMap.containsKey(id)) {
+            System.out.println(id + " | Capacity: " + bogieMap.get(id));
+        } else {
             System.out.println("Bogie not found");
-    }
-
-    void displayAll() {
-        for (PassengerBogie b : bogies) {
-            b.display();
         }
     }
 
-    void displayInOrder() {
-        System.out.println("Bogie IDs in insertion order:");
-        for (String id : bogieIds) {
-            System.out.println(id);
+    void displayAll() {
+        for (Map.Entry<String, Integer> e : bogieMap.entrySet()) {
+            System.out.println(e.getKey() + " | Capacity: " + e.getValue());
         }
     }
 }
@@ -74,8 +49,7 @@ public class TrainConsistManagementApp {
             System.out.println("2 Remove Bogie");
             System.out.println("3 Search Bogie");
             System.out.println("4 Display All");
-            System.out.println("5 Display Insertion Order");
-            System.out.println("6 Exit");
+            System.out.println("5 Exit");
 
             choice = sc.nextInt();
 
@@ -84,35 +58,30 @@ public class TrainConsistManagementApp {
                     sc.nextLine();
                     System.out.print("Enter ID: ");
                     String id = sc.nextLine();
-                    System.out.print("Enter type: ");
-                    String type = sc.nextLine();
                     System.out.print("Enter capacity: ");
                     int cap = sc.nextInt();
-                    train.addBogie(new PassengerBogie(id, type, cap));
+                    train.addBogie(id, cap);
                     break;
 
                 case 2:
-                    System.out.print("Enter index: ");
-                    int index = sc.nextInt();
-                    train.removeBogie(index);
+                    sc.nextLine();
+                    System.out.print("Enter ID: ");
+                    String removeId = sc.nextLine();
+                    train.removeBogie(removeId);
                     break;
 
                 case 3:
                     sc.nextLine();
-                    System.out.print("Enter ID to search: ");
-                    String search = sc.nextLine();
-                    train.searchBogie(search);
+                    System.out.print("Enter ID: ");
+                    String searchId = sc.nextLine();
+                    train.searchBogie(searchId);
                     break;
 
                 case 4:
                     train.displayAll();
                     break;
-
-                case 5:
-                    train.displayInOrder();
-                    break;
             }
 
-        } while (choice != 6);
+        } while (choice != 5);
     }
 }
