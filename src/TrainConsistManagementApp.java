@@ -1,53 +1,48 @@
 import java.util.*;
-import java.util.regex.*;
-import java.util.stream.*;
+import java.util.function.*;
 
-class PassengerBogie {
+class GoodsBogie {
     String id;
-    String type;
-    int capacity;
+    String shape;
+    String cargo;
 
-    PassengerBogie(String id, String type, int capacity) {
+    GoodsBogie(String id, String shape, String cargo) {
         this.id = id;
-        this.type = type;
-        this.capacity = capacity;
+        this.shape = shape;
+        this.cargo = cargo;
     }
 
     void display() {
-        System.out.println(id + " | " + type + " | " + capacity);
+        System.out.println(id + " | " + shape + " | " + cargo);
     }
 }
 
 class Train {
-    ArrayList<PassengerBogie> bogies = new ArrayList<>();
-    HashMap<String, Integer> bogieMap = new HashMap<>();
+    ArrayList<GoodsBogie> goodsBogies = new ArrayList<>();
 
-    boolean validateTrainId(String trainId) {
-        Pattern p = Pattern.compile("TRN-\\d{4}");
-        Matcher m = p.matcher(trainId);
-        return m.matches();
-    }
+    Predicate<GoodsBogie> safetyRule = b ->
+            (b.shape.equalsIgnoreCase("Cylindrical") && b.cargo.equalsIgnoreCase("Oil")) ||
+                    (b.shape.equalsIgnoreCase("Rectangular") && b.cargo.equalsIgnoreCase("Coal"));
 
-    boolean validateCargoCode(String code) {
-        Pattern p = Pattern.compile("CG-[A-Z]{3}-\\d{2}");
-        Matcher m = p.matcher(code);
-        return m.matches();
-    }
-
-    void addBogie(PassengerBogie b) {
-        if (bogieMap.containsKey(b.id)) {
-            System.out.println("Duplicate ID not allowed");
+    void addGoodsBogie(GoodsBogie b) {
+        if (safetyRule.test(b)) {
+            goodsBogies.add(b);
+            System.out.println("Goods bogie added (Safe)");
         } else {
-            bogies.add(b);
-            bogieMap.put(b.id, b.capacity);
-            System.out.println("Bogie added");
+            System.out.println("Safety violation: Invalid cargo for bogie type");
         }
     }
 
     void displayAll() {
-        for (PassengerBogie b : bogies) {
+        for (GoodsBogie b : goodsBogies) {
             b.display();
         }
+    }
+
+    void checkAllSafety() {
+        goodsBogies.stream()
+                .filter(b -> !safetyRule.test(b))
+                .forEach(b -> System.out.println("Unsafe: " + b.id));
     }
 }
 
@@ -57,51 +52,38 @@ public class TrainConsistManagementApp {
         Scanner sc = new Scanner(System.in);
         Train train = new Train();
 
-        System.out.print("Enter Train ID: ");
-        String trainId = sc.nextLine();
-
-        if (!train.validateTrainId(trainId)) {
-            System.out.println("Invalid Train ID format");
-            return;
-        } else {
-            System.out.println("Valid Train ID");
-        }
-
-        System.out.print("Enter Cargo Code: ");
-        String cargo = sc.nextLine();
-
-        if (!train.validateCargoCode(cargo)) {
-            System.out.println("Invalid Cargo Code format");
-        } else {
-            System.out.println("Valid Cargo Code");
-        }
-
         int choice;
 
         do {
-            System.out.println("\n1 Add Bogie");
+            System.out.println("\n1 Add Goods Bogie");
             System.out.println("2 Display All");
-            System.out.println("3 Exit");
+            System.out.println("3 Check Safety");
+            System.out.println("4 Exit");
 
             choice = sc.nextInt();
 
             switch (choice) {
                 case 1:
                     sc.nextLine();
-                    System.out.print("Enter Bogie ID: ");
+                    System.out.print("Enter ID: ");
                     String id = sc.nextLine();
-                    System.out.print("Enter type: ");
-                    String type = sc.nextLine();
-                    System.out.print("Enter capacity: ");
-                    int cap = sc.nextInt();
-                    train.addBogie(new PassengerBogie(id, type, cap));
+                    System.out.print("Enter shape (Cylindrical/Rectangular): ");
+                    String shape = sc.nextLine();
+                    System.out.print("Enter cargo (Oil/Coal): ");
+                    String cargo = sc.nextLine();
+
+                    train.addGoodsBogie(new GoodsBogie(id, shape, cargo));
                     break;
 
                 case 2:
                     train.displayAll();
                     break;
+
+                case 3:
+                    train.checkAllSafety();
+                    break;
             }
 
-        } while (choice != 3);
+        } while (choice != 4);
     }
 }
