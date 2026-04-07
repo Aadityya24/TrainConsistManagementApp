@@ -1,5 +1,11 @@
 import java.util.*;
 
+class EmptyTrainException extends Exception {
+    EmptyTrainException(String msg) {
+        super(msg);
+    }
+}
+
 class PassengerBogie {
     String id;
     String type;
@@ -25,20 +31,25 @@ class Train {
     }
 
     void displayAll() {
+        if (bogies.isEmpty()) {
+            System.out.println("Train is empty");
+            return;
+        }
+
         for (PassengerBogie b : bogies) {
             b.display();
         }
     }
 
-    void sortById() {
-        Collections.sort(bogies, Comparator.comparing(b -> b.id));
-        System.out.println("Sorted by ID");
-    }
+    void binarySearch(String searchId) throws EmptyTrainException {
+        if (bogies.isEmpty()) {
+            throw new EmptyTrainException("Cannot search: Train has no bogies");
+        }
 
-    void binarySearch(String searchId) {
+        Collections.sort(bogies, Comparator.comparing(b -> b.id));
+
         int left = 0;
         int right = bogies.size() - 1;
-        boolean found = false;
 
         while (left <= right) {
             int mid = (left + right) / 2;
@@ -49,8 +60,7 @@ class Train {
             if (cmp == 0) {
                 System.out.println("Bogie found:");
                 midBogie.display();
-                found = true;
-                break;
+                return;
             } else if (cmp < 0) {
                 left = mid + 1;
             } else {
@@ -58,9 +68,7 @@ class Train {
             }
         }
 
-        if (!found) {
-            System.out.println("Bogie not found");
-        }
+        System.out.println("Bogie not found");
     }
 }
 
@@ -75,9 +83,8 @@ public class TrainConsistManagementApp {
         do {
             System.out.println("\n1 Add Bogie");
             System.out.println("2 Display All");
-            System.out.println("3 Sort by ID");
-            System.out.println("4 Binary Search");
-            System.out.println("5 Exit");
+            System.out.println("3 Search Bogie (Binary)");
+            System.out.println("4 Exit");
 
             choice = sc.nextInt();
 
@@ -98,17 +105,18 @@ public class TrainConsistManagementApp {
                     break;
 
                 case 3:
-                    train.sortById();
-                    break;
-
-                case 4:
                     sc.nextLine();
                     System.out.print("Enter ID to search: ");
                     String search = sc.nextLine();
-                    train.binarySearch(search);
+
+                    try {
+                        train.binarySearch(search);
+                    } catch (EmptyTrainException e) {
+                        System.out.println("Error: " + e.getMessage());
+                    }
                     break;
             }
 
-        } while (choice != 5);
+        } while (choice != 4);
     }
 }
