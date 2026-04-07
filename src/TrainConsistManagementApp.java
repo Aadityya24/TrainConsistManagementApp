@@ -1,40 +1,46 @@
 import java.util.*;
 
-class InvalidCapacityException extends Exception {
-    InvalidCapacityException(String msg) {
+class InvalidCargoException extends Exception {
+    InvalidCargoException(String msg) {
         super(msg);
     }
 }
 
-class PassengerBogie {
+class GoodsBogie {
     String id;
-    String type;
-    int capacity;
+    String shape;
+    String cargo;
 
-    PassengerBogie(String id, String type, int capacity) throws InvalidCapacityException {
-        if (capacity <= 0) {
-            throw new InvalidCapacityException("Capacity must be greater than 0");
-        }
+    GoodsBogie(String id, String shape) {
         this.id = id;
-        this.type = type;
-        this.capacity = capacity;
+        this.shape = shape;
+    }
+
+    void assignCargo(String cargo) throws InvalidCargoException {
+        if (shape.equalsIgnoreCase("Cylindrical") && !cargo.equalsIgnoreCase("Oil")) {
+            throw new InvalidCargoException("Cylindrical bogie can carry only Oil");
+        }
+        if (shape.equalsIgnoreCase("Rectangular") && !cargo.equalsIgnoreCase("Coal")) {
+            throw new InvalidCargoException("Rectangular bogie can carry only Coal");
+        }
+        this.cargo = cargo;
     }
 
     void display() {
-        System.out.println(id + " | " + type + " | " + capacity);
+        System.out.println(id + " | " + shape + " | " + cargo);
     }
 }
 
 class Train {
-    ArrayList<PassengerBogie> bogies = new ArrayList<>();
+    ArrayList<GoodsBogie> goodsBogies = new ArrayList<>();
 
-    void addBogie(PassengerBogie b) {
-        bogies.add(b);
+    void addBogie(GoodsBogie b) {
+        goodsBogies.add(b);
         System.out.println("Bogie added");
     }
 
     void displayAll() {
-        for (PassengerBogie b : bogies) {
+        for (GoodsBogie b : goodsBogies) {
             b.display();
         }
     }
@@ -49,9 +55,10 @@ public class TrainConsistManagementApp {
         int choice;
 
         do {
-            System.out.println("\n1 Add Bogie");
-            System.out.println("2 Display All");
-            System.out.println("3 Exit");
+            System.out.println("\n1 Add Goods Bogie");
+            System.out.println("2 Assign Cargo");
+            System.out.println("3 Display All");
+            System.out.println("4 Exit");
 
             choice = sc.nextInt();
 
@@ -60,24 +67,37 @@ public class TrainConsistManagementApp {
                     sc.nextLine();
                     System.out.print("Enter ID: ");
                     String id = sc.nextLine();
-                    System.out.print("Enter type: ");
-                    String type = sc.nextLine();
-                    System.out.print("Enter capacity: ");
-                    int cap = sc.nextInt();
-
-                    try {
-                        PassengerBogie b = new PassengerBogie(id, type, cap);
-                        train.addBogie(b);
-                    } catch (InvalidCapacityException e) {
-                        System.out.println("Error: " + e.getMessage());
-                    }
+                    System.out.print("Enter shape (Cylindrical/Rectangular): ");
+                    String shape = sc.nextLine();
+                    train.addBogie(new GoodsBogie(id, shape));
                     break;
 
                 case 2:
+                    sc.nextLine();
+                    System.out.print("Enter Bogie ID: ");
+                    String bid = sc.nextLine();
+                    System.out.print("Enter Cargo: ");
+                    String cargo = sc.nextLine();
+
+                    for (GoodsBogie b : train.goodsBogies) {
+                        if (b.id.equalsIgnoreCase(bid)) {
+                            try {
+                                b.assignCargo(cargo);
+                                System.out.println("Cargo assigned successfully");
+                            } catch (InvalidCargoException e) {
+                                System.out.println("Error: " + e.getMessage());
+                            } finally {
+                                System.out.println("Assignment attempted");
+                            }
+                        }
+                    }
+                    break;
+
+                case 3:
                     train.displayAll();
                     break;
             }
 
-        } while (choice != 3);
+        } while (choice != 4);
     }
 }
