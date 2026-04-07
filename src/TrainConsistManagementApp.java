@@ -30,15 +30,31 @@ class Train {
         }
     }
 
-    void linearSearch(String searchId) {
+    void sortById() {
+        Collections.sort(bogies, Comparator.comparing(b -> b.id));
+        System.out.println("Sorted by ID");
+    }
+
+    void binarySearch(String searchId) {
+        int left = 0;
+        int right = bogies.size() - 1;
         boolean found = false;
 
-        for (PassengerBogie b : bogies) {
-            if (b.id.equalsIgnoreCase(searchId)) {
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            PassengerBogie midBogie = bogies.get(mid);
+
+            int cmp = midBogie.id.compareToIgnoreCase(searchId);
+
+            if (cmp == 0) {
                 System.out.println("Bogie found:");
-                b.display();
+                midBogie.display();
                 found = true;
                 break;
+            } else if (cmp < 0) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
             }
         }
 
@@ -59,8 +75,9 @@ public class TrainConsistManagementApp {
         do {
             System.out.println("\n1 Add Bogie");
             System.out.println("2 Display All");
-            System.out.println("3 Search Bogie (Linear Search)");
-            System.out.println("4 Exit");
+            System.out.println("3 Sort by ID");
+            System.out.println("4 Binary Search");
+            System.out.println("5 Exit");
 
             choice = sc.nextInt();
 
@@ -81,13 +98,17 @@ public class TrainConsistManagementApp {
                     break;
 
                 case 3:
+                    train.sortById();
+                    break;
+
+                case 4:
                     sc.nextLine();
                     System.out.print("Enter ID to search: ");
                     String search = sc.nextLine();
-                    train.linearSearch(search);
+                    train.binarySearch(search);
                     break;
             }
 
-        } while (choice != 4);
+        } while (choice != 5);
     }
 }
