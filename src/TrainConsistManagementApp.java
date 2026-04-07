@@ -24,10 +24,24 @@ class CapacityComparator implements Comparator<PassengerBogie> {
 
 class Train {
     ArrayList<PassengerBogie> bogies = new ArrayList<>();
+    HashMap<String, Integer> bogieMap = new HashMap<>();
 
     void addBogie(PassengerBogie b) {
-        bogies.add(b);
-        System.out.println("Bogie added");
+        if (bogieMap.containsKey(b.id)) {
+            System.out.println("Duplicate ID not allowed");
+        } else {
+            bogies.add(b);
+            bogieMap.put(b.id, b.capacity);
+            System.out.println("Bogie added");
+        }
+    }
+
+    void searchBogie(String id) {
+        if (bogieMap.containsKey(id)) {
+            System.out.println(id + " | Capacity: " + bogieMap.get(id));
+        } else {
+            System.out.println("Bogie not found");
+        }
     }
 
     void displayAll() {
@@ -54,7 +68,8 @@ public class TrainConsistManagementApp {
             System.out.println("\n1 Add Bogie");
             System.out.println("2 Display All");
             System.out.println("3 Sort by Capacity");
-            System.out.println("4 Exit");
+            System.out.println("4 Search Bogie");
+            System.out.println("5 Exit");
 
             choice = sc.nextInt();
 
@@ -77,8 +92,15 @@ public class TrainConsistManagementApp {
                 case 3:
                     train.sortByCapacity();
                     break;
+
+                case 4:
+                    sc.nextLine();
+                    System.out.print("Enter ID: ");
+                    String search = sc.nextLine();
+                    train.searchBogie(search);
+                    break;
             }
 
-        } while (choice != 4);
+        } while (choice != 5);
     }
 }
