@@ -1,38 +1,37 @@
 import java.util.*;
 
-class PassengerBogie {
-    String id;
-    String type;
-    int capacity;
-
-    PassengerBogie(String id, String type, int capacity) {
-        this.id = id;
-        this.type = type;
-        this.capacity = capacity;
-    }
-
-    void display() {
-        System.out.println(id + " | " + type + " | Capacity: " + capacity);
-    }
-}
-
 class Train {
-    ArrayList<PassengerBogie> bogies = new ArrayList<>();
-    HashSet<String> bogieIds = new HashSet<>();
+    HashMap<String, Integer> bogieMap = new HashMap<>();
 
-    void addBogie(PassengerBogie b) {
-        if (bogieIds.contains(b.id)) {
+    void addBogie(String id, int capacity) {
+        if (bogieMap.containsKey(id)) {
             System.out.println("Duplicate ID not allowed");
         } else {
-            bogies.add(b);
-            bogieIds.add(b.id);
+            bogieMap.put(id, capacity);
             System.out.println("Bogie added");
         }
     }
 
-    void display() {
-        for (PassengerBogie b : bogies) {
-            b.display();
+    void removeBogie(String id) {
+        if (bogieMap.containsKey(id)) {
+            bogieMap.remove(id);
+            System.out.println("Bogie removed");
+        } else {
+            System.out.println("Bogie not found");
+        }
+    }
+
+    void searchBogie(String id) {
+        if (bogieMap.containsKey(id)) {
+            System.out.println("Capacity: " + bogieMap.get(id));
+        } else {
+            System.out.println("Bogie not found");
+        }
+    }
+
+    void displayAll() {
+        for (Map.Entry<String, Integer> entry : bogieMap.entrySet()) {
+            System.out.println(entry.getKey() + " | Capacity: " + entry.getValue());
         }
     }
 }
@@ -47,29 +46,42 @@ public class TrainConsistManagementApp {
 
         do {
             System.out.println("\n1 Add Bogie");
-            System.out.println("2 Display");
-            System.out.println("3 Exit");
+            System.out.println("2 Remove Bogie");
+            System.out.println("3 Search Bogie");
+            System.out.println("4 Display All");
+            System.out.println("5 Exit");
 
             choice = sc.nextInt();
 
             switch (choice) {
                 case 1:
                     sc.nextLine();
-                    System.out.print("Enter Bogie ID: ");
+                    System.out.print("Enter ID: ");
                     String id = sc.nextLine();
-                    System.out.print("Enter type: ");
-                    String type = sc.nextLine();
                     System.out.print("Enter capacity: ");
                     int cap = sc.nextInt();
-
-                    train.addBogie(new PassengerBogie(id, type, cap));
+                    train.addBogie(id, cap);
                     break;
 
                 case 2:
-                    train.display();
+                    sc.nextLine();
+                    System.out.print("Enter ID: ");
+                    String removeId = sc.nextLine();
+                    train.removeBogie(removeId);
+                    break;
+
+                case 3:
+                    sc.nextLine();
+                    System.out.print("Enter ID: ");
+                    String searchId = sc.nextLine();
+                    train.searchBogie(searchId);
+                    break;
+
+                case 4:
+                    train.displayAll();
                     break;
             }
 
-        } while (choice != 3);
+        } while (choice != 5);
     }
 }
