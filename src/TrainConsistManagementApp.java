@@ -1,40 +1,38 @@
 import java.util.*;
 
-class Bogie {
+class PassengerBogie {
+    String id;
     String type;
-
-    Bogie(String type) {
-        this.type = type;
-    }
-
-    void display() {
-        System.out.println(type);
-    }
-}
-
-class PassengerBogie extends Bogie {
     int capacity;
 
-    PassengerBogie(String type, int capacity) {
-        super(type);
+    PassengerBogie(String id, String type, int capacity) {
+        this.id = id;
+        this.type = type;
         this.capacity = capacity;
     }
 
     void display() {
-        System.out.println(type + " | Capacity: " + capacity);
+        System.out.println(id + " | " + type + " | " + capacity);
     }
 }
 
 class Train {
+    LinkedHashSet<String> bogieIds = new LinkedHashSet<>();
     ArrayList<PassengerBogie> bogies = new ArrayList<>();
 
     void addBogie(PassengerBogie b) {
-        bogies.add(b);
-        System.out.println("Bogie added");
+        if (bogieIds.contains(b.id)) {
+            System.out.println("Duplicate ID not allowed");
+        } else {
+            bogieIds.add(b.id);
+            bogies.add(b);
+            System.out.println("Bogie added");
+        }
     }
 
     void removeBogie(int index) {
         if (index >= 0 && index < bogies.size()) {
+            bogieIds.remove(bogies.get(index).id);
             bogies.remove(index);
             System.out.println("Bogie removed");
         } else {
@@ -42,26 +40,23 @@ class Train {
         }
     }
 
-    void searchBogie(String type) {
-        boolean found = false;
-
-        for (PassengerBogie b : bogies) {
-            if (b.type.equalsIgnoreCase(type)) {
-                found = true;
-                break;
-            }
-        }
-
-        if (found)
+    void searchBogie(String id) {
+        if (bogieIds.contains(id))
             System.out.println("Bogie exists");
         else
             System.out.println("Bogie not found");
     }
 
-    void display() {
-        for (int i = 0; i < bogies.size(); i++) {
-            System.out.print(i + " -> ");
-            bogies.get(i).display();
+    void displayAll() {
+        for (PassengerBogie b : bogies) {
+            b.display();
+        }
+    }
+
+    void displayInOrder() {
+        System.out.println("Bogie IDs in insertion order:");
+        for (String id : bogieIds) {
+            System.out.println(id);
         }
     }
 }
@@ -78,19 +73,22 @@ public class TrainConsistManagementApp {
             System.out.println("\n1 Add Bogie");
             System.out.println("2 Remove Bogie");
             System.out.println("3 Search Bogie");
-            System.out.println("4 Display");
-            System.out.println("5 Exit");
+            System.out.println("4 Display All");
+            System.out.println("5 Display Insertion Order");
+            System.out.println("6 Exit");
 
             choice = sc.nextInt();
 
             switch (choice) {
                 case 1:
                     sc.nextLine();
+                    System.out.print("Enter ID: ");
+                    String id = sc.nextLine();
                     System.out.print("Enter type: ");
                     String type = sc.nextLine();
                     System.out.print("Enter capacity: ");
                     int cap = sc.nextInt();
-                    train.addBogie(new PassengerBogie(type, cap));
+                    train.addBogie(new PassengerBogie(id, type, cap));
                     break;
 
                 case 2:
@@ -101,16 +99,20 @@ public class TrainConsistManagementApp {
 
                 case 3:
                     sc.nextLine();
-                    System.out.print("Enter type to search: ");
+                    System.out.print("Enter ID to search: ");
                     String search = sc.nextLine();
                     train.searchBogie(search);
                     break;
 
                 case 4:
-                    train.display();
+                    train.displayAll();
+                    break;
+
+                case 5:
+                    train.displayInOrder();
                     break;
             }
 
-        } while (choice != 5);
+        } while (choice != 6);
     }
 }
