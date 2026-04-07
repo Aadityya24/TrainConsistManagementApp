@@ -30,20 +30,19 @@ class Train {
         }
     }
 
-    void bubbleSortByCapacity() {
-        int n = bogies.size();
+    void sortBogieNames() {
+        String[] types = new String[bogies.size()];
 
-        for (int i = 0; i < n - 1; i++) {
-            for (int j = 0; j < n - i - 1; j++) {
-                if (bogies.get(j).capacity < bogies.get(j + 1).capacity) {
-                    PassengerBogie temp = bogies.get(j);
-                    bogies.set(j, bogies.get(j + 1));
-                    bogies.set(j + 1, temp);
-                }
-            }
+        for (int i = 0; i < bogies.size(); i++) {
+            types[i] = bogies.get(i).type;
         }
 
-        System.out.println("Sorted using Bubble Sort");
+        Arrays.sort(types);
+
+        System.out.println("Sorted Bogie Types:");
+        for (String t : types) {
+            System.out.println(t);
+        }
     }
 }
 
@@ -58,7 +57,7 @@ public class TrainConsistManagementApp {
         do {
             System.out.println("\n1 Add Bogie");
             System.out.println("2 Display All");
-            System.out.println("3 Bubble Sort by Capacity");
+            System.out.println("3 Sort Bogie Names");
             System.out.println("4 Exit");
 
             choice = sc.nextInt();
@@ -80,7 +79,7 @@ public class TrainConsistManagementApp {
                     break;
 
                 case 3:
-                    train.bubbleSortByCapacity();
+                    train.sortBogieNames();
                     break;
             }
 
