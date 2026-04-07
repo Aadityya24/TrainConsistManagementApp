@@ -8,7 +8,7 @@ class Bogie {
     }
 
     void display() {
-        System.out.println("Bogie Type: " + type);
+        System.out.println(type);
     }
 }
 
@@ -21,59 +21,96 @@ class PassengerBogie extends Bogie {
     }
 
     void display() {
-        System.out.println(type + " Passenger Bogie | Capacity: " + capacity);
-    }
-}
-
-class GoodsBogie extends Bogie {
-    String cargoType;
-
-    GoodsBogie(String type, String cargoType) {
-        super(type);
-        this.cargoType = cargoType;
-    }
-
-    void display() {
-        System.out.println(type + " Goods Bogie | Cargo: " + cargoType);
+        System.out.println(type + " | Capacity: " + capacity);
     }
 }
 
 class Train {
-    List<Bogie> bogies = new ArrayList<>();
+    ArrayList<PassengerBogie> bogies = new ArrayList<>();
 
-    void addBogie(Bogie b) {
+    void addBogie(PassengerBogie b) {
         bogies.add(b);
+        System.out.println("Bogie added");
     }
 
-    void displaySummary() {
-        int totalCapacity = 0;
+    void removeBogie(int index) {
+        if (index >= 0 && index < bogies.size()) {
+            bogies.remove(index);
+            System.out.println("Bogie removed");
+        } else {
+            System.out.println("Invalid index");
+        }
+    }
 
-        System.out.println("\n--- Train Consist Summary ---");
+    void searchBogie(String type) {
+        boolean found = false;
 
-        for (Bogie b : bogies) {
-            b.display();
-
-            if (b instanceof PassengerBogie) {
-                totalCapacity += ((PassengerBogie) b).capacity;
+        for (PassengerBogie b : bogies) {
+            if (b.type.equalsIgnoreCase(type)) {
+                found = true;
+                break;
             }
         }
 
-        System.out.println("Total Bogies: " + bogies.size());
-        System.out.println("Total Passenger Capacity: " + totalCapacity);
+        if (found)
+            System.out.println("Bogie exists");
+        else
+            System.out.println("Bogie not found");
+    }
+
+    void display() {
+        for (int i = 0; i < bogies.size(); i++) {
+            System.out.print(i + " -> ");
+            bogies.get(i).display();
+        }
     }
 }
 
 public class TrainConsistManagementApp {
     public static void main(String[] args) {
 
+        Scanner sc = new Scanner(System.in);
         Train train = new Train();
 
-        train.addBogie(new PassengerBogie("Sleeper", 72));
-        train.addBogie(new PassengerBogie("AC Chair", 60));
-        train.addBogie(new PassengerBogie("First Class", 40));
-        train.addBogie(new GoodsBogie("Rectangular", "Coal"));
-        train.addBogie(new GoodsBogie("Cylindrical", "Oil"));
+        int choice;
 
-        train.displaySummary();
+        do {
+            System.out.println("\n1 Add Bogie");
+            System.out.println("2 Remove Bogie");
+            System.out.println("3 Search Bogie");
+            System.out.println("4 Display");
+            System.out.println("5 Exit");
+
+            choice = sc.nextInt();
+
+            switch (choice) {
+                case 1:
+                    sc.nextLine();
+                    System.out.print("Enter type: ");
+                    String type = sc.nextLine();
+                    System.out.print("Enter capacity: ");
+                    int cap = sc.nextInt();
+                    train.addBogie(new PassengerBogie(type, cap));
+                    break;
+
+                case 2:
+                    System.out.print("Enter index: ");
+                    int index = sc.nextInt();
+                    train.removeBogie(index);
+                    break;
+
+                case 3:
+                    sc.nextLine();
+                    System.out.print("Enter type to search: ");
+                    String search = sc.nextLine();
+                    train.searchBogie(search);
+                    break;
+
+                case 4:
+                    train.display();
+                    break;
+            }
+
+        } while (choice != 5);
     }
 }
