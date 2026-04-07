@@ -1,79 +1,75 @@
 import java.util.*;
 
-class Bogie {
+class PassengerBogie {
+    String id;
     String type;
-
-    Bogie(String type) {
-        this.type = type;
-    }
-
-    void display() {
-        System.out.println("Bogie Type: " + type);
-    }
-}
-
-class PassengerBogie extends Bogie {
     int capacity;
 
-    PassengerBogie(String type, int capacity) {
-        super(type);
+    PassengerBogie(String id, String type, int capacity) {
+        this.id = id;
+        this.type = type;
         this.capacity = capacity;
     }
 
     void display() {
-        System.out.println(type + " Passenger Bogie | Capacity: " + capacity);
-    }
-}
-
-class GoodsBogie extends Bogie {
-    String cargoType;
-
-    GoodsBogie(String type, String cargoType) {
-        super(type);
-        this.cargoType = cargoType;
-    }
-
-    void display() {
-        System.out.println(type + " Goods Bogie | Cargo: " + cargoType);
+        System.out.println(id + " | " + type + " | Capacity: " + capacity);
     }
 }
 
 class Train {
-    List<Bogie> bogies = new ArrayList<>();
+    ArrayList<PassengerBogie> bogies = new ArrayList<>();
+    HashSet<String> bogieIds = new HashSet<>();
 
-    void addBogie(Bogie b) {
-        bogies.add(b);
+    void addBogie(PassengerBogie b) {
+        if (bogieIds.contains(b.id)) {
+            System.out.println("Duplicate ID not allowed");
+        } else {
+            bogies.add(b);
+            bogieIds.add(b.id);
+            System.out.println("Bogie added");
+        }
     }
 
-    void displaySummary() {
-        int totalCapacity = 0;
-
-        System.out.println("\n--- Train Consist Summary ---");
-
-        for (Bogie b : bogies) {
+    void display() {
+        for (PassengerBogie b : bogies) {
             b.display();
-
-            if (b instanceof PassengerBogie) {
-                totalCapacity += ((PassengerBogie) b).capacity;
-            }
         }
-
-        System.out.println("Total Bogies: " + bogies.size());
-        System.out.println("Total Passenger Capacity: " + totalCapacity);
     }
 }
 
 public class TrainConsistManagementApp {
     public static void main(String[] args) {
 
+        Scanner sc = new Scanner(System.in);
         Train train = new Train();
 
-        train.addBogie(new PassengerBogie("Sleeper", 72));
-        train.addBogie(new PassengerBogie("AC Chair", 60));
-        train.addBogie(new PassengerBogie("First Class", 40));
-        train.addBogie(new GoodsBogie("Rectangular", "Coal"));
-        train.addBogie(new GoodsBogie("Cylindrical", "Oil"));
+        int choice;
 
-        train.displaySummary();
+        do {
+            System.out.println("\n1 Add Bogie");
+            System.out.println("2 Display");
+            System.out.println("3 Exit");
+
+            choice = sc.nextInt();
+
+            switch (choice) {
+                case 1:
+                    sc.nextLine();
+                    System.out.print("Enter Bogie ID: ");
+                    String id = sc.nextLine();
+                    System.out.print("Enter type: ");
+                    String type = sc.nextLine();
+                    System.out.print("Enter capacity: ");
+                    int cap = sc.nextInt();
+
+                    train.addBogie(new PassengerBogie(id, type, cap));
+                    break;
+
+                case 2:
+                    train.display();
+                    break;
+            }
+
+        } while (choice != 3);
     }
 }
